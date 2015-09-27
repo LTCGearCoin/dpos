@@ -1,0 +1,9 @@
+Building LTCGearCoin
+
+See doc/readme-qt.rst for instructions on building LTCGearCoin QT,
+the intended-for-end-users, nice-graphical-interface, reference
+implementation of LTCGearCoin.
+
+See doc/build-*.txt for instructions on building LTCGearCoind,
+the intended-for-services, no-graphical-interface, reference
+implementation of LTCGearCoin.
