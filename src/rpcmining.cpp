@@ -122,8 +122,6 @@ Value getworkex(const Array& params, bool fHelp)
     if (IsInitialBlockDownload())
         throw JSONRPCError(-10, "LTCGearCoin is downloading blocks...");
 
-    if (pindexBest->nHeight >= LAST_POW_BLOCK)
-        throw JSONRPCError(RPC_MISC_ERROR, "No more PoW blocks");
 
     typedef map<uint256, pair<CBlock*, CScript> > mapNewBlock_t;
     static mapNewBlock_t mapNewBlock;
@@ -256,8 +254,6 @@ Value getwork(const Array& params, bool fHelp)
     if (IsInitialBlockDownload())
         throw JSONRPCError(RPC_CLIENT_IN_INITIAL_DOWNLOAD, "LTCGearCoin is downloading blocks...");
 
-    if (pindexBest->nHeight >= LAST_POW_BLOCK)
-        throw JSONRPCError(RPC_MISC_ERROR, "No more PoW blocks");
 
     typedef map<uint256, pair<CBlock*, CScript> > mapNewBlock_t;
     static mapNewBlock_t mapNewBlock;    // FIXME: thread safety
@@ -302,7 +298,7 @@ Value getwork(const Array& params, bool fHelp)
         }
 
         // Update nTime
-        pblock->UpdateTime(pindexPrev);
+        //pblock->UpdateTime(pindexPrev); 
         pblock->nNonce = 0;
 
         // Update nExtraNonce
@@ -400,8 +396,6 @@ Value getblocktemplate(const Array& params, bool fHelp)
     if (IsInitialBlockDownload())
         throw JSONRPCError(RPC_CLIENT_IN_INITIAL_DOWNLOAD, "LTCGearCoin is downloading blocks...");
 
-    if (pindexBest->nHeight >= LAST_POW_BLOCK)
-        throw JSONRPCError(RPC_MISC_ERROR, "No more PoW blocks");
 
     static CReserveKey reservekey(pwalletMain);
 
@@ -436,7 +430,7 @@ Value getblocktemplate(const Array& params, bool fHelp)
     }
 
     // Update nTime
-    pblock->UpdateTime(pindexPrev);
+    //pblock->UpdateTime(pindexPrev);
     pblock->nNonce = 0;
 
     Array transactions;
