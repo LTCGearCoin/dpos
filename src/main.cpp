@@ -68,7 +68,7 @@ map<uint256, set<uint256> > mapOrphanTransactionsByPrev;
 // Constant stuff for coinbase transactions we create:
 CScript COINBASE_FLAGS;
 
-const string strMessageMagic = "1337 Signed Message:\n";
+const string strMessageMagic = "LTCGearCoin Signed Message:\n";
 
 // Settings
 int64_t nTransactionFee = MIN_TX_FEE;
@@ -971,81 +971,16 @@ int64_t GetProofOfWorkReward(int64_t nFees)
        
    if (pindexBest->nHeight <= 1)
       {
-        int64_t nSubsidy = 1176557.608 * COIN;
+        int64_t nSubsidy = 18750 * COIN;
         return nSubsidy + nFees;
       }
       
-    else if (pindexBest->nHeight <= 1440)
+      
+    else if (pindexBest->nHeight <= 250000)
       {
-        int64_t nSubsidy = 0 * COIN;
-        return nSubsidy + nFees;
-      }
-
-	else if (pindexBest->nHeight <= 2880)
-      {
-        int64_t nSubsidy = 0.1337 * COIN;
-        return nSubsidy + nFees;
-      }
-
-	else if (pindexBest->nHeight <= 4320)
-      {
-        int64_t nSubsidy = 1.337 * COIN;
-        return nSubsidy + nFees;
-      }
-
-	else if (pindexBest->nHeight <= 5760)
-      {
-        int64_t nSubsidy = 13.37 * COIN;
-        return nSubsidy + nFees;
-      }  
-
-	else if (pindexBest->nHeight <= 7200)
-      {
-        int64_t nSubsidy = 133.7 * COIN;
+        int64_t nSubsidy = 10 * COIN;
         return nSubsidy + nFees;
       }      
-
-	else if (pindexBest->nHeight <= 8640)
-      {
-        int64_t nSubsidy = 1337 * COIN;
-        return nSubsidy + nFees;
-      }      
-
-	else if (pindexBest->nHeight <= 10080)
-      {
-        int64_t nSubsidy = 13370 * COIN;
-        return nSubsidy + nFees;
-      }
-
-	else if (pindexBest->nHeight <= 11520)
-      {
-        int64_t nSubsidy = 1337 * COIN;
-        return nSubsidy + nFees;
-      }
-
-	else if (pindexBest->nHeight <= 12960)
-      {
-        int64_t nSubsidy = 133.7 * COIN;
-        return nSubsidy + nFees;
-      }     
-
-	else if (pindexBest->nHeight <= 14400)
-      {
-        int64_t nSubsidy = 13.37 * COIN;
-        return nSubsidy + nFees;
-      }	  
-
-	else if (pindexBest->nHeight <= 15840)
-      {
-        int64_t nSubsidy = 1.337 * COIN;
-        return nSubsidy + nFees;
-      }	  
-
-	else if (pindexBest->nHeight <= 17280)
-      {
-        int64_t nSubsidy = 0.1337 * COIN;
-        return nSubsidy + nFees;
-      }	      
       
       
       
@@ -1056,10 +991,8 @@ int64_t GetProofOfWorkReward(int64_t nFees)
 
 }
 
-
-
 // miner's coin stake reward based on coin age spent (coin-days)
-int64_t GetProofOfStakeRewardV1(int64_t nCoinAge, int64_t nFees)
+int64_t GetProofOfStakeRewardV1(int64_t nCoinAge, int64_t nFees) 
 {
     int64_t nSubsidy = nCoinAge * COIN_YEAR_REWARD * 33 / (365 * 33 + 8);
 
@@ -1069,27 +1002,29 @@ int64_t GetProofOfStakeRewardV1(int64_t nCoinAge, int64_t nFees)
     return nSubsidy + nFees;
 }
 
-// miner's coin stake reward based on coin age spent (coin-days)
-int64_t GetProofOfStakeRewardV2(int64_t nCoinAge, int64_t nFees)
-{
-    int64_t nSubsidy = nCoinAge * COIN_YEAR_REWARD * 33 / (365 * 33 + 8) / 2;
++// miner's coin stake reward based on coin age spent (coin-days)  
+ int64_t GetProofOfStakeRewardV2(int64_t nCoinAge, int64_t nFees)  
+ {  
+     int64_t nSubsidy = nCoinAge * COIN_YEAR_REWARD * 33 / (365 * 33 + 8) / 2;  
+   
+     if (fDebug && GetBoolArg("-printcreation"))  
+         printf("GetProofOfStakeReward(): create=%s nCoinAge=%"PRId64"\n", FormatMoney(nSubsidy).c_str(), nCoinAge);  
+   
+     return nSubsidy + nFees;  
+ }  
+   
+ int64_t GetProofOfStakeReward(int64_t nCoinAge, int64_t nFees, unsigned int nTime)  
+ {  
+ 	int64_t nReward = 0;  
+ 	if(nTime > FORK_TIME)  
+ 		nReward = GetProofOfStakeRewardV2((int64_t)nCoinAge, nFees);  
+ 	else  
+ 		nReward = GetProofOfStakeRewardV1((int64_t)nCoinAge, nFees);  
+ 	  
+ 	return nReward;  
+ }  
+   
 
-    if (fDebug && GetBoolArg("-printcreation"))
-        printf("GetProofOfStakeReward(): create=%s nCoinAge=%"PRId64"\n", FormatMoney(nSubsidy).c_str(), nCoinAge);
-
-    return nSubsidy + nFees;
-}
-
-int64_t GetProofOfStakeReward(int64_t nCoinAge, int64_t nFees, unsigned int nTime)
-{
-	int64_t nReward = 0;
-	if(nTime > FORK_TIME)
-		nReward = GetProofOfStakeRewardV2((int64_t)nCoinAge, nFees);
-	else
-		nReward = GetProofOfStakeRewardV1((int64_t)nCoinAge, nFees);
-	
-	return nReward;
-}
 
 static const int64_t nTargetTimespan = 20 * 60;  // Retarget Difficulty every 20 minutes
 
@@ -1676,7 +1611,7 @@ bool CBlock::ConnectBlock(CTxDB& txdb, CBlockIndex* pindex, bool fJustCheck)
         if (!vtx[1].GetCoinAge(txdb, nCoinAge))
             return error("ConnectBlock() : %s unable to get coin age for coinstake", vtx[1].GetHash().ToString().substr(0,10).c_str());
 
-        int64_t nCalculatedStakeReward = GetProofOfStakeReward(nCoinAge, nFees, vtx[1].nTime);
+        int64_t nCalculatedStakeReward = GetProofOfStakeReward(nCoinAge, nFees, vtx[1].nTime); 
 
         if (nStakeReward > nCalculatedStakeReward)
             return DoS(100, error("ConnectBlock() : coinstake pays too much(actual=%"PRId64" vs calculated=%"PRId64")", nStakeReward, nCalculatedStakeReward));
@@ -2500,7 +2435,7 @@ bool CheckDiskSpace(uint64_t nAdditionalBytes)
         string strMessage = _("Warning: Disk space is low!");
         strMiscWarning = strMessage;
         printf("*** %s\n", strMessage.c_str());
-        uiInterface.ThreadSafeMessageBox(strMessage, "1337", CClientUIInterface::OK | CClientUIInterface::ICON_EXCLAMATION | CClientUIInterface::MODAL);
+        uiInterface.ThreadSafeMessageBox(strMessage, "LTCGearCoin", CClientUIInterface::OK | CClientUIInterface::ICON_EXCLAMATION | CClientUIInterface::MODAL);
         StartShutdown();
         return false;
     }
@@ -2948,7 +2883,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
         CAddress addrFrom;
         uint64_t nNonce = 1;
         vRecv >> pfrom->nVersion >> pfrom->nServices >> nTime >> addrMe;
-        if (pfrom->nVersion < (GetAdjustedTime() > FORK_TIME ? MIN_PROTO_VERSION_FORK : MIN_PROTO_VERSION))
+        if (pfrom->nVersion < (GetAdjustedTime() > FORK_TIME ? MIN_PROTO_VERSION_FORK : MIN_PROTO_VERSION)) 
         {
             // Since February 20, 2012, the protocol is initiated at version 209,
             // and earlier versions are no longer supported
@@ -3026,7 +2961,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv)
         static int nAskedForBlocks = 0;
         if (!pfrom->fClient && !pfrom->fOneShot &&
             (pfrom->nStartingHeight > (nBestHeight - 144)) &&
-            (pfrom->nVersion < NOBLKS_VERSION_START || pfrom->nVersion > (GetAdjustedTime() > FORK_TIME ? NOBLKS_VERSION_END_FORK : NOBLKS_VERSION_END)) &&
+            (pfrom->nVersion < NOBLKS_VERSION_START || pfrom->nVersion > (GetAdjustedTime() > FORK_TIME ? NOBLKS_VERSION_END_FORK : NOBLKS_VERSION_END)) && 
              (nAskedForBlocks < 1 || vNodes.size() <= 1))
         {
             nAskedForBlocks++;

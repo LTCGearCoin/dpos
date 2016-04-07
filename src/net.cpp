@@ -373,7 +373,7 @@ bool GetMyExternalIP(CNetAddr& ipRet)
 
             pszGet = "GET / HTTP/1.1\r\n"
                      "Host: checkip.dyndns.org\r\n"
-                     "User-Agent: 1337\r\n"
+                     "User-Agent: LTCGearCoin\r\n"
                      "Connection: close\r\n"
                      "\r\n";
 
@@ -392,7 +392,7 @@ bool GetMyExternalIP(CNetAddr& ipRet)
 
             pszGet = "GET /simple/ HTTP/1.1\r\n"
                      "Host: www.showmyip.com\r\n"
-                     "User-Agent: 1337\r\n"
+                     "User-Agent: LTCGearCoin\r\n"
                      "Connection: close\r\n"
                      "\r\n";
 
@@ -409,7 +409,7 @@ bool GetMyExternalIP(CNetAddr& ipRet)
 void ThreadGetMyExternalIP(void* parg)
 {
     // Make this thread recognisable as the external IP detection thread
-    RenameThread("1337-ext-ip");
+    RenameThread("LTCGearCoin-ext-ip");
 
     CNetAddr addrLocalHost;
     if (GetMyExternalIP(addrLocalHost))
@@ -634,7 +634,7 @@ void CNode::copyStats(CNodeStats &stats)
 void ThreadSocketHandler(void* parg)
 {
     // Make this thread recognisable as the networking thread
-    RenameThread("1337-net");
+    RenameThread("LTCGearCoin-net");
 
     try
     {
@@ -988,7 +988,7 @@ void ThreadSocketHandler2(void* parg)
 void ThreadMapPort(void* parg)
 {
     // Make this thread recognisable as the UPnP thread
-    RenameThread("1337-UPnP");
+    RenameThread("LTCGearCoin-UPnP");
 
     try
     {
@@ -1049,7 +1049,7 @@ void ThreadMapPort2(void* parg)
             }
         }
 
-        string strDesc = "1337 " + FormatFullVersion();
+        string strDesc = "LTCGearCoin " + FormatFullVersion();
 #ifndef UPNPDISCOVER_SUCCESS
         /* miniupnpc 1.5 */
         r = UPNP_AddPortMapping(urls.controlURL, data.first.servicetype,
@@ -1132,15 +1132,15 @@ void MapPort()
 // The first name is used as information source for addrman.
 // The second name should resolve to a list of seed addresses.
 static const char *strDNSSeed[][2] = {
-		    	{"node1", "node1.stake2play.com"},
-		    	{"node2", "node2.stake2play.com"},
-
+		    	{"24.228.184.113", "24.228.184.113"},
+		    	{"moonhost.kicks-ass.org", "moonhost.kicks-ass.org"},
+		    	{"185.106.122.15", "185.106.122.15"},				
 };
 
 void ThreadDNSAddressSeed(void* parg)
 {
     // Make this thread recognisable as the DNS seeding thread
-    RenameThread("1337-dnsseed");
+    RenameThread("LTCGearCoin-dnsseed");
 
     try
     {
@@ -1205,7 +1205,7 @@ void ThreadDNSAddressSeed2(void* parg)
 
 unsigned int pnSeed[] =
 {
-   };
+     }; 
 
 void DumpAddresses()
 {
@@ -1234,7 +1234,7 @@ void ThreadDumpAddress2(void* parg)
 void ThreadDumpAddress(void* parg)
 {
     // Make this thread recognisable as the address dumping thread
-    RenameThread("1337-adrdump");
+    RenameThread("LTCGearCoin-adrdump");
 
     try
     {
@@ -1249,7 +1249,7 @@ void ThreadDumpAddress(void* parg)
 void ThreadOpenConnections(void* parg)
 {
     // Make this thread recognisable as the connection opening thread
-    RenameThread("1337-opencon");
+    RenameThread("LTCGearCoin-opencon");
 
     try
     {
@@ -1430,7 +1430,7 @@ void ThreadOpenConnections2(void* parg)
 void ThreadOpenAddedConnections(void* parg)
 {
     // Make this thread recognisable as the connection opening thread
-    RenameThread("1337-opencon");
+    RenameThread("LTCGearCoin-opencon");
 
     try
     {
@@ -1561,7 +1561,7 @@ bool OpenNetworkConnection(const CAddress& addrConnect, CSemaphoreGrant *grantOu
 void ThreadMessageHandler(void* parg)
 {
     // Make this thread recognisable as the message handling thread
-    RenameThread("1337-msghand");
+    RenameThread("LTCGearCoin-msghand");
 
     try
     {
@@ -1729,7 +1729,7 @@ bool BindListenPort(const CService &addrBind, string& strError)
     {
         int nErr = WSAGetLastError();
         if (nErr == WSAEADDRINUSE)
-            strError = strprintf(_("Unable to bind to %s on this computer. 1337 is probably already running."), addrBind.ToString().c_str());
+            strError = strprintf(_("Unable to bind to %s on this computer. LTCGearCoin is probably already running."), addrBind.ToString().c_str());
         else
             strError = strprintf(_("Unable to bind to %s on this computer (bind returned error %d, %s)"), addrBind.ToString().c_str(), nErr, strerror(nErr));
         printf("%s\n", strError.c_str());
@@ -1812,7 +1812,7 @@ void static Discover()
 void StartNode(void* parg)
 {
     // Make this thread recognisable as the startup thread
-    RenameThread("1337-start");
+    RenameThread("LTCGearCoin-start");
 
     if (semOutbound == NULL) {
         // initialize semaphore

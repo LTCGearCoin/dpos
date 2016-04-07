@@ -524,7 +524,7 @@ void StakeMiner(CWallet *pwallet)
     SetThreadPriority(THREAD_PRIORITY_LOWEST);
 
     // Make this thread recognisable as the mining thread
-    RenameThread("1337-miner");
+    RenameThread("LTCGearCoin-miner");
 
     bool fTryToSync = true;
 

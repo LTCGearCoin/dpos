@@ -26,18 +26,18 @@ class CInv;
 class CRequestTracker;
 class CNode;
 
-static const int LAST_POW_BLOCK = 17280;
+static const int LAST_POW_BLOCK = 250000;
 
 static const unsigned int MAX_BLOCK_SIZE = 1000000;
 static const unsigned int MAX_BLOCK_SIZE_GEN = MAX_BLOCK_SIZE/2;
 static const unsigned int MAX_BLOCK_SIGOPS = MAX_BLOCK_SIZE/50;
 static const unsigned int MAX_ORPHAN_TRANSACTIONS = MAX_BLOCK_SIZE/100;
 static const unsigned int MAX_INV_SZ = 50000;
-static const int64_t MIN_TX_FEE = 10000;
+static const int64_t MIN_TX_FEE = 100000;
 static const int64_t MIN_RELAY_TX_FEE = MIN_TX_FEE;
-static const int64_t MAX_MONEY = 235311570 * COIN;
-static const int64_t COIN_YEAR_REWARD = 1337 * CENT; // 1337%, After fork 668.5%
-static const unsigned int FORK_TIME = 1459695600; //  Sun, 03 Apr 2016 15:00:00 GMT
+static const int64_t MAX_MONEY = 100000000 * COIN;
+static const int64_t COIN_YEAR_REWARD = 10 * CENT; // 10% per year
+static const unsigned int FORK_TIME = 1459695600; //  Sun, 03 Apr 2016 15:00:00 GMT 
 
 inline bool MoneyRange(int64_t nValue) { return (nValue >= 0 && nValue <= MAX_MONEY); }
 // Threshold for nLockTime: below this value it is interpreted as block number, otherwise as UNIX timestamp.
@@ -52,20 +52,22 @@ static const int fHaveUPnP = false;
 static const uint256 hashGenesisBlock("0x000004611c87517dfd29fe7f34bd6da2e1ad3d305ac12afe80a3229069390f68");
 static const uint256 hashGenesisBlockTestNet("0x000004611c87517dfd29fe7f34bd6da2e1ad3d305ac12afe80a3229069390f68");
 
-inline int64_t PastDrift(int64_t nTime)   
-{ 
-	if(nTime < FORK_TIME)
-		return nTime - 10 * 60; 
-	else
-		return nTime - 90;
-}
-inline int64_t FutureDrift(int64_t nTime) 
-{ 
-	if(nTime < FORK_TIME)
-		return nTime + 10 * 60;
-	else
-		return nTime + 90;
-}
++inline int64_t PastDrift(int64_t nTime)     
+{   
+	if(nTime < FORK_TIME)  
+		return nTime - 10 * 60;   
+	else  
+		return nTime - 90;  
+}  
+inline int64_t FutureDrift(int64_t nTime)   
+{   
+ 	if(nTime < FORK_TIME)  
+		return nTime + 10 * 60;  
+	else  
+		return nTime + 90;  
+}  
+
+
 
 extern libzerocoin::Params* ZCParams;
 extern CScript COINBASE_FLAGS;
@@ -127,9 +129,9 @@ bool LoadExternalBlockFile(FILE* fileIn);
 bool CheckProofOfWork(uint256 hash, unsigned int nBits);
 unsigned int GetNextTargetRequired(const CBlockIndex* pindexLast, bool fProofOfStake);
 int64_t GetProofOfWorkReward(int64_t nFees);
-int64_t GetProofOfStakeReward(int64_t nCoinAge, int64_t nFees, unsigned int nTime);
-int64_t GetProofOfStakeRewardV1(int64_t nCoinAge, int64_t nFees);
-int64_t GetProofOfStakeRewardV2(int64_t nCoinAge, int64_t nFees);
+int64_t GetProofOfStakeReward(int64_t nCoinAge, int64_t nFees);int64_t GetProofOfStakeReward(int64_t nCoinAge, int64_t nFees, unsigned int nTime);  
+int64_t GetProofOfStakeRewardV1(int64_t nCoinAge, int64_t nFees);  
+int64_t GetProofOfStakeRewardV2(int64_t nCoinAge, int64_t nFees);  
 unsigned int ComputeMinWork(unsigned int nBase, int64_t nTime);
 unsigned int ComputeMinStake(unsigned int nBase, int64_t nTime, unsigned int nBlockTime);
 int GetNumBlocksOfPeers();
