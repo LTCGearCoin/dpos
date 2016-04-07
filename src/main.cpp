@@ -39,10 +39,8 @@ libzerocoin::Params* ZCParams;
 CBigNum bnProofOfWorkLimit(~uint256(0) >> 20); // target limit for proof of work, results with 0,000244140625 proof-of-work difficulty
 CBigNum bnProofOfStakeLimit(~uint256(0) >> 20);
 CBigNum bnProofOfWorkLimitTestNet(~uint256(0) >> 16);
-static CBigNum bnProofOfStakeLimitTestNet(~uint256(0) >> 16); 
 
-unsigned int nWorkTargetSpacing = 60; // 1 minutes per block 
-unsigned int nStakeTargetSpacing = 15; // 15 seconds 
+unsigned int nTargetSpacing = 60; // 1 minutes per block
 unsigned int nStakeMinAge = 1 * 60 * 60; // 1 hours
 unsigned int nStakeMaxAge = -1; // unlimited
 unsigned int nModifierInterval = 10 * 60; // time to elapse before new modifier is computed
@@ -982,7 +980,7 @@ int64_t GetProofOfWorkReward(int64_t nFees)
       {
         int64_t nSubsidy = 10 * COIN;
         return nSubsidy + nFees;
-      }        
+      }      
       
       
       
@@ -1057,16 +1055,7 @@ const CBlockIndex* GetLastBlockIndex(const CBlockIndex* pindex, bool fProofOfSta
 
 unsigned int GetNextTargetRequired(const CBlockIndex* pindexLast, bool fProofOfStake)
 {
-    const int64_t maxTargetTimespan = 960;  
-    const int64_t nInterval = 30;  
-    CBigNum bnTargetLimit = bnProofOfWorkLimit;  
- 
-     if(fProofOfStake)  
-     {  
-         // Proof-of-Stake blocks has own target limit since nVersion=3 supermajority on mainNet and always on testNet  
-         bnTargetLimit = bnProofOfStakeLimit;  
-     }  
-
+    CBigNum bnTargetLimit = fProofOfStake ? bnProofOfStakeLimit : bnProofOfWorkLimit;
 
     if (pindexLast == NULL)
         return bnTargetLimit.GetCompact(); // genesis block
@@ -1079,32 +1068,19 @@ unsigned int GetNextTargetRequired(const CBlockIndex* pindexLast, bool fProofOfS
         return bnTargetLimit.GetCompact(); // second block
 
     int64_t nActualSpacing = pindexPrev->GetBlockTime() - pindexPrevPrev->GetBlockTime();
-    if(nActualSpacing < 0)  
-    {  
-        nActualSpacing = 1;  
-    }  
-    else if(nActualSpacing > maxTargetTimespan)  
-    {  
-        nActualSpacing = maxTargetTimespan;  
-    }  
+    if (nActualSpacing < 0)
+        nActualSpacing = nTargetSpacing;
 
-	
-
-
+    // ppcoin: target change every block
+    // ppcoin: retarget with exponential moving toward target spacing
     CBigNum bnNew;
     bnNew.SetCompact(pindexPrev->nBits);
-   
-     int64_t nTargetSpacing = nWorkTargetSpacing;  
-     if(fProofOfStake)  
-         nTargetSpacing = nStakeTargetSpacing;  
-   
-
+    int64_t nInterval = nTargetTimespan / nTargetSpacing;
     bnNew *= ((nInterval - 1) * nTargetSpacing + nActualSpacing + nActualSpacing);
     bnNew /= ((nInterval + 1) * nTargetSpacing);
 
     if (bnNew <= 0 || bnNew > bnTargetLimit)
-    if (bnNew > bnTargetLimit) 
-		bnNew = bnTargetLimit;
+        bnNew = bnTargetLimit;
 
     return bnNew.GetCompact();
 }
@@ -2137,12 +2113,10 @@ bool CBlock::AcceptBlock()
         return DoS(10, error("AcceptBlock() : prev block not found"));
     CBlockIndex* pindexPrev = (*mi).second;
     int nHeight = pindexPrev->nHeight+1;
-	
-	// This Coin will now be PoW/PoS hybrid permanently 
-    /* if (IsProofOfWork() && nHeight > LAST_POW_BLOCK) 
-         return DoS(100, error("AcceptBlock() : reject proof-of-work at height %d", nHeight));*/ 
 
- 
+    if (IsProofOfWork() && nHeight > LAST_POW_BLOCK)
+        return DoS(100, error("AcceptBlock() : reject proof-of-work at height %d", nHeight));
+
     // Check proof-of-work or proof-of-stake
     if (nBits != GetNextTargetRequired(pindexPrev, IsProofOfStake()))
         return DoS(100, error("AcceptBlock() : incorrect %s", IsProofOfWork() ? "proof-of-work" : "proof-of-stake"));

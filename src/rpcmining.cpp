@@ -13,9 +13,7 @@
 using namespace json_spirit;
 using namespace std;
 
-    extern unsigned int nStakeTargetSpacing;  
-
-    Value getsubsidy(const Array& params, bool fHelp)
+Value getsubsidy(const Array& params, bool fHelp)
 {
     if (fHelp || params.size() > 1)
         throw runtime_error(
@@ -85,7 +83,7 @@ Value getstakinginfo(const Array& params, bool fHelp)
 
     uint64_t nNetworkWeight = GetPoSKernelPS();
     bool staking = nLastCoinStakeSearchInterval && nWeight;
-    int nExpectedTime = staking ? (nStakeTargetSpacing * nNetworkWeight / nWeight) : -1; 
+    int nExpectedTime = staking ? (nTargetSpacing * nNetworkWeight / nWeight) : -1;
 
     Object obj;
 
@@ -122,6 +120,8 @@ Value getworkex(const Array& params, bool fHelp)
     if (IsInitialBlockDownload())
         throw JSONRPCError(-10, "LTCGearCoin is downloading blocks...");
 
+    if (pindexBest->nHeight >= LAST_POW_BLOCK)
+        throw JSONRPCError(RPC_MISC_ERROR, "No more PoW blocks");
 
     typedef map<uint256, pair<CBlock*, CScript> > mapNewBlock_t;
     static mapNewBlock_t mapNewBlock;
@@ -254,6 +254,8 @@ Value getwork(const Array& params, bool fHelp)
     if (IsInitialBlockDownload())
         throw JSONRPCError(RPC_CLIENT_IN_INITIAL_DOWNLOAD, "LTCGearCoin is downloading blocks...");
 
+    if (pindexBest->nHeight >= LAST_POW_BLOCK)
+        throw JSONRPCError(RPC_MISC_ERROR, "No more PoW blocks");
 
     typedef map<uint256, pair<CBlock*, CScript> > mapNewBlock_t;
     static mapNewBlock_t mapNewBlock;    // FIXME: thread safety
@@ -298,7 +300,7 @@ Value getwork(const Array& params, bool fHelp)
         }
 
         // Update nTime
-        //pblock->UpdateTime(pindexPrev); 
+        pblock->UpdateTime(pindexPrev);
         pblock->nNonce = 0;
 
         // Update nExtraNonce
@@ -396,6 +398,8 @@ Value getblocktemplate(const Array& params, bool fHelp)
     if (IsInitialBlockDownload())
         throw JSONRPCError(RPC_CLIENT_IN_INITIAL_DOWNLOAD, "LTCGearCoin is downloading blocks...");
 
+    if (pindexBest->nHeight >= LAST_POW_BLOCK)
+        throw JSONRPCError(RPC_MISC_ERROR, "No more PoW blocks");
 
     static CReserveKey reservekey(pwalletMain);
 
@@ -430,7 +434,7 @@ Value getblocktemplate(const Array& params, bool fHelp)
     }
 
     // Update nTime
-    //pblock->UpdateTime(pindexPrev);
+    pblock->UpdateTime(pindexPrev);
     pblock->nNonce = 0;
 
     Array transactions;

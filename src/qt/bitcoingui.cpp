@@ -61,7 +61,6 @@
 
 extern CWallet* pwalletMain;
 extern int64_t nLastCoinStakeSearchInterval;
-extern unsigned int nStakeTargetSpacing; 
 double GetPoSKernelPS();
 
 BitcoinGUI::BitcoinGUI(QWidget *parent):
@@ -927,7 +926,7 @@ void BitcoinGUI::updateStakingIcon()
     if (nLastCoinStakeSearchInterval && nWeight)
     {
         uint64_t nNetworkWeight = GetPoSKernelPS();
-        unsigned nEstimateTime = nStakeTargetSpacing * nNetworkWeight / nWeight; 
+        unsigned nEstimateTime = nTargetSpacing * nNetworkWeight / nWeight;
 
         QString text;
         if (nEstimateTime < 60)
